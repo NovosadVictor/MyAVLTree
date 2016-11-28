@@ -3,13 +3,12 @@
 #include <iostream>
 
 template<class U, class T>
-class AVLNode {
-public:
-	AVLNode() : _left(NULL), _right(NULL), _height(0) {}
-	AVLNode(const U &key, T value) : _key(key), _value(value) , _height(1) , _left(NULL), _right(NULL) {}
-	AVLNode<U, T> *LeftRotate();
-	AVLNode<U, T> *RightRotate();
-	AVLNode<U, T> *Balance();
+struct AVLNode {
+	AVLNode();
+	AVLNode(const U &key, T value);
+	AVLNode<U, T> **LeftRotate();
+	AVLNode<U, T> **RightRotate();
+	AVLNode<U, T> **Balance();
 	AVLNode<U, T> *findMin();
 	AVLNode<U, T> *deleteMin();
 	int BalanceFactor();
@@ -21,7 +20,20 @@ public:
 	size_t _height;
 };
 
-
+template<class U, class T>
+AVLNode<U, T>::AVLNode(const U &key, T value) {
+	_key = key;
+	_value = value;
+	_height = 1;
+	_left = NULL;
+	_right = NULL;
+}
+template<class U, class T>
+AVLNode<U, T>::AVLNode() {
+	_left = NULL;
+	_right = NULL;
+	_height = 0;
+}
 template<class U, class T>
 size_t AVLNode<U, T>::FixHeight() {
 	size_t H_l = _left ? _left->FixHeight() : 0;
@@ -30,39 +42,57 @@ size_t AVLNode<U, T>::FixHeight() {
 }
 
 template<class U, class T>
-AVLNode<U, T> *AVLNode<U, T>::RightRotate() {
+AVLNode<U, T> **AVLNode<U, T>::RightRotate() {
 	AVLNode<U, T> *L = _left;
 	_left = L->_right;
 	L->_right = this;
-	FixHeight();
+	(*this).FixHeight();
 	L->FixHeight();
-	return L;
+	AVLNode<U, T> **This = new AVLNode<U, T>*;
+	*This = L;
+	AVLNode<U, T> **_T = This;
+	*This = NULL;
+	delete *This;
+	*_T = L;
+	return _T;
 }
 
 template<class U, class T>
-AVLNode<U, T> *AVLNode<U, T>::LeftRotate() {
+AVLNode<U, T> **AVLNode<U, T>::LeftRotate() {
 	AVLNode<U, T> *R = _right;
 	_right = R->_left;
 	R->_left = this;
-	FixHeight();
+	(*this).FixHeight();
 	R->FixHeight();
-	return R;
+	AVLNode<U, T> **This = new AVLNode<U, T>*;
+	*This = R;
+	AVLNode<U, T> **_T = This;
+	*This = NULL;
+	delete *This;
+	*_T = R;
+	return _T;
 }
 
 template<class U, class T>
-AVLNode<U, T> *AVLNode<U, T>::Balance() {
-	FixHeight();
-	if (BalanceFactor() == 2) {
+AVLNode<U, T> **AVLNode<U, T>::Balance() {
+	(*this).FixHeight();
+	if ((*this).BalanceFactor() == 2) {
 		if (_right->BalanceFactor() < 0)
-			_right = _right->RightRotate();
-		return LeftRotate();
+			_right = *(_right->RightRotate());
+		return (*this).LeftRotate();
 	}
-	if (BalanceFactor() == -2) {
+	if ((*this).BalanceFactor() == -2) {
 		if (_left->BalanceFactor() > 0)
-			_left = _left->LeftRotate();
-		return RightRotate();
+			_left = *(_left->LeftRotate());
+		return (*this).RightRotate();
 	}
-	return this;
+	AVLNode<U, T> **This = new AVLNode<U, T>*;
+	*This = this;
+	AVLNode<U, T> **_T = This;
+	*This = NULL;
+	delete *This;
+	*_T = this;
+	return _T;
 }
 
 template<class U, class T>
@@ -84,6 +114,6 @@ AVLNode<U, T> *AVLNode<U, T>::deleteMin() {
 	if (_left == NULL)
 		return _right;
 	_left = _left->deleteMin();
-	return Balance();
+	return *((*this).Balance());
 }
 #endif

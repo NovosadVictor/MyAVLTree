@@ -21,7 +21,6 @@ private:
 	AVLNode<U, T> *_node;
 };
 
-
 template <class U, class T>
 AVL_iterator<U, T> &AVL_iterator<U, T>::GetLeft() {
 	_node = _node->_left;
