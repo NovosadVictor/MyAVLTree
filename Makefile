@@ -6,7 +6,7 @@ prog: main.o MyString.o
 MyString.o: MyString.cpp MyString.h
 	g++ -c MyString.cpp
 
-main.o: main.cpp MyString.h MyAVL.h MyAVLNode.h MyIterator.h
+main.o: main.cpp MyString.h MyAVL2.h MyAVLNode.h MyQueue.h MyList.h
 	g++ -c main.cpp 
 
 clean:
