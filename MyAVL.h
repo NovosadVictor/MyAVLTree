@@ -3,7 +3,7 @@
 #include "MyAVLNode.h"
 #include "MyQueue.h"
 #include <exception>
-
+#include <cmath>
 
 template<class U, class T>
 AVLNode<U, T> *Next(AVLNode<U, T> *root, const U &str);
@@ -75,11 +75,11 @@ public:
 	AVLTree(const AVLTree<U, T> &other);
 	~AVLTree();
 	size_t Height() { return _root->FixHeight(); }
-	void insert(const U &str,T value);
+	void insert(const U &str, const T &value);
 	T &operator[](const U &str);
 	AVLTree<U, T> &operator=(const AVLTree<U, T> &other);
 	void AVLSort();
-	AVLNode<U, T> **insert_(AVLNode<U, T> **node, const U &str, T value);
+	AVLNode<U, T> **insert_(AVLNode<U, T> **node, const U &str, const T &value);
 	void DeleteVertex(const U &str);
 	AVLNode<U, T> **DeleteVertex_(AVLNode<U, T> **node, const U &str);
 	AVLNode<U, T> *find_(AVLNode<U, T> *node, const U &str);
@@ -109,6 +109,7 @@ public:
 	AVLNode<U, T> *next(const U &str) const;
         AVLNode<U, T> *prev(const U &str) const;
 	void Destruct(AVLNode<U, T> **node);
+	int TheoryHeight() { return (2.14 * log(_size)); }
 	AVL_iterator Find_(AVL_iterator node, const U &str) {
 		if (str < node.key())
 			Find_(node.GetLeft(), str);
@@ -304,23 +305,24 @@ bool AVLTree<U, T>::find(const U &str) {
 }
 
 template<class U, class T>
-AVLNode<U, T> **AVLTree<U, T>::insert_(AVLNode<U, T> **node, const U &str,T value) {
+AVLNode<U, T> **AVLTree<U, T>::insert_(AVLNode<U, T> **node, const U &str,const T &value) {
 	if (*node == NULL) {
 		*node = new AVLNode<U, T>(str, value);
 		return node;
 	}
 	else {
-		if (str <= (*node)->_key)
+		if (str < (*node)->_key)
 			(*node)->_left = *(insert_(&((*node)->_left), str, value));		
-		else 
-			(*node)->_right = *(insert_(&((*node)->_right), str, value));
+		else
+			if (str > (*node)->_key) 
+				(*node)->_right = *(insert_(&((*node)->_right), str, value));
 		*node = (*node)->Balance();
 		return node;
 	}
 }
 
 template<class U, class T>
-void AVLTree<U, T>::insert(const U &str, T value) {
+void AVLTree<U, T>::insert(const U &str,const T &value) {
 		if (!find(str)) {
 			insert_(&_root, str, value);
 			++_size;

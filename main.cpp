@@ -2,6 +2,7 @@
 #include "MyString.h"
 #include <cassert>
 #include <stdlib.h>
+#include <map>
 
 void test1();
 void test2();
@@ -18,8 +19,8 @@ int main() {
 //		test3();
 //		test4();
 //		test5();
-		test6();
-//		test7();
+//		test6();
+		test7();
 	}
 	catch(int e) {
 		switch(e) {
@@ -136,17 +137,22 @@ void test6() {
         Tree.insert("sixth", 6);
 	std::cout << "        Tree before sort\n" << std::endl;
 	Tree.AVLPrint();
-	std::cout << Tree.size() << std::endl;
-	std::cout << Tree.Height() << std::endl;
+	AVLTree<String, int>::AVL_iterator it(Tree);
+	for (it = Tree.GetMin(); it != Tree.GetMax(); ++it)
+		std::cout << it.value() << " ";
+	std::cout << it.value() << std::endl;
 	Tree.AVLSort();
 	std::cout << "\n        Tree after sort\n" << std::endl;
-	Tree.AVLPrint();
-	std::cout << Tree.size() << std::endl;	
+	Tree.AVLPrint();	
+	for (it = Tree.GetMin(); it != Tree.GetMax(); ++it)
+                std::cout << it.value() << " ";
+        std::cout << it.value() << std::endl;
 }
 void test7() {
 	AVLTree<int, int> Tree;
-	for (int i = 0; i < 1000000; ++i)
-		Tree.insert(rand(), rand());
-	std::cout << Tree.size() << std::endl;
-	std::cout << Tree.Height() << std::endl;
+	for (int i = 0; i < 10000; ++i)
+		Tree.insert(rand(), i);
+	std::cout << "Trees size = " << Tree.size() << std::endl;
+	std::cout << "Trees Height = " << Tree.Height() << std::endl;
+	std::cout << "Trees Theory Height = " << Tree.TheoryHeight() << std::endl;
 }

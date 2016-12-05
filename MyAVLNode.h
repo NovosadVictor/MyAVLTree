@@ -5,8 +5,8 @@
 template<class U, class T>
 class AVLNode {
 public:
-	AVLNode();// : _left(NULL),  _right(NULL), _height(0) {}
-	AVLNode(const U &key, T value);// : _key(key), _value(value) , _height(1) , _left(NULL), _right(NULL) {}
+	AVLNode();
+	AVLNode(const U &key, const T &value);
 	AVLNode<U, T> *LeftRotate();
 	AVLNode<U, T> *RightRotate();
 	AVLNode<U, T> *Balance();
@@ -28,7 +28,7 @@ AVLNode<U, T>::AVLNode() {
 	_height = 0;
 }
 template<class U, class T>
-AVLNode<U, T>::AVLNode(const U &key, T value) {
+AVLNode<U, T>::AVLNode(const U &key, const T &value) {
 	_key = key;
 	_value = value;
 	_height = 1;
