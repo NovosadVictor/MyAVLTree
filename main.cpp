@@ -1,6 +1,7 @@
-#include "MyAVL2.h"
+#include "MyAVL.h"
 #include "MyString.h"
 #include <cassert>
+#include <stdlib.h>
 
 void test1();
 void test2();
@@ -8,15 +9,17 @@ void test3();
 void test4();
 void test5();
 void test6();
+void test7();
 
 int main() {
 	try {
-		test1();
-		test2();
-		test3();
-		test4();
-		test5();
+//		test1();
+//		test2();
+//		test3();
+//		test4();
+//		test5();
 		test6();
+//		test7();
 	}
 	catch(int e) {
 		switch(e) {
@@ -133,7 +136,17 @@ void test6() {
         Tree.insert("sixth", 6);
 	std::cout << "        Tree before sort\n" << std::endl;
 	Tree.AVLPrint();
+	std::cout << Tree.size() << std::endl;
+	std::cout << Tree.Height() << std::endl;
 	Tree.AVLSort();
 	std::cout << "\n        Tree after sort\n" << std::endl;
 	Tree.AVLPrint();
+	std::cout << Tree.size() << std::endl;	
+}
+void test7() {
+	AVLTree<int, int> Tree;
+	for (int i = 0; i < 1000000; ++i)
+		Tree.insert(rand(), rand());
+	std::cout << Tree.size() << std::endl;
+	std::cout << Tree.Height() << std::endl;
 }

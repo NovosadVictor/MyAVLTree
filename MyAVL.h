@@ -74,6 +74,7 @@ public:
 	AVLTree() : _root(NULL), _size(0) {}
 	AVLTree(const AVLTree<U, T> &other);
 	~AVLTree();
+	size_t Height() { return _root->FixHeight(); }
 	void insert(const U &str,T value);
 	T &operator[](const U &str);
 	AVLTree<U, T> &operator=(const AVLTree<U, T> &other);
@@ -289,7 +290,17 @@ AVLNode<U, T> *AVLTree<U, T>::find_(AVLNode<U, T> *node, const U &str) {
 
 template<class U, class T>
 bool AVLTree<U, T>::find(const U &str) {
-	return (find_(_root, str) != NULL);
+	AVLNode<U, T> *r = _root;
+	while (r != NULL) {
+		if (str < r->_key)
+			r = r->_left;
+		else
+			if (str > r->_key)
+				r = r->_right;
+			else
+				return true;
+	}
+	return false;
 }
 
 template<class U, class T>
@@ -310,8 +321,10 @@ AVLNode<U, T> **AVLTree<U, T>::insert_(AVLNode<U, T> **node, const U &str,T valu
 
 template<class U, class T>
 void AVLTree<U, T>::insert(const U &str, T value) {
-		insert_(&_root, str, value);
-		++_size;
+		if (!find(str)) {
+			insert_(&_root, str, value);
+			++_size;
+		}
 }
 
 template<class U, class T>
