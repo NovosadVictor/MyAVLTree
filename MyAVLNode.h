@@ -1,6 +1,6 @@
 #ifndef _MYAVLNODE_H_
 #define _MYAVLNODE_H_
-#include <iostream>
+#include <iosfwd>
 
 template<class U, class T>
 class AVLNode {
@@ -13,7 +13,7 @@ public:
 	AVLNode<U, T> *findMin();
 	AVLNode<U, T> *deleteMin();
 	int BalanceFactor();
-	size_t FixHeight();
+	void FixHeight();
 	U _key;
 	T _value;
 	AVLNode<U, T> *_left;
@@ -36,10 +36,10 @@ AVLNode<U, T>::AVLNode(const U &key, const T &value) {
 	_right = NULL;
 }
 template<class U, class T>
-size_t AVLNode<U, T>::FixHeight() {
-	size_t H_l = _left ? _left->FixHeight() : 0;
-	size_t H_r = _right ? _right->FixHeight() : 0;
-	return (H_l > H_r ? H_l : H_r) + 1;
+void AVLNode<U, T>::FixHeight() {
+	size_t H_l = _left ? _left->_height: 0;
+	size_t H_r = _right ? _right->_height : 0;
+	_height = (H_l > H_r ? H_l : H_r) + 1;
 }
 
 template<class U, class T>
@@ -65,25 +65,26 @@ AVLNode<U, T> *AVLNode<U, T>::LeftRotate() {
 template<class U, class T>
 AVLNode<U, T> *AVLNode<U, T>::Balance() {
 	FixHeight();
-	if (BalanceFactor() == 2) {
-		if (_right->BalanceFactor() < 0)
-			_right = _right->RightRotate();
-		return LeftRotate();
+	switch(BalanceFactor()) {
+		case 2:
+			if (_right->BalanceFactor() < 0)
+				_right = _right->RightRotate();
+			return LeftRotate();
+		case -2:
+			if (_left->BalanceFactor() > 0)
+				_left = _left->LeftRotate();
+			return RightRotate();
+		default:
+			return this;
 	}
-	if (BalanceFactor() == -2) {
-		if (_left->BalanceFactor() > 0)
-			_left = _left->LeftRotate();
-		return RightRotate();
-	}
-	return this;
 }
 
 template<class U, class T>
 int AVLNode<U, T>::BalanceFactor() {
 	if (this == NULL)
 		return 0;
-	int r_height = _right ? _right->FixHeight() : 0;
-	int l_height = _left ? _left->FixHeight() : 0;
+	int r_height = _right ? _right->_height : 0;
+	int l_height = _left ? _left->_height : 0;
 	return r_height - l_height;
 }
 

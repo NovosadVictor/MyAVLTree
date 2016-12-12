@@ -3,6 +3,7 @@
 #include <cassert>
 #include <stdlib.h>
 #include <map>
+#include <time.h>
 
 void test1();
 void test2();
@@ -14,12 +15,12 @@ void test7();
 
 int main() {
 	try {
-//		test1();
-//		test2();
-//		test3();
-//		test4();
-//		test5();
-//		test6();
+		test1();
+		test2();
+		test3();
+		test4();
+		test5();
+		test6();
 		test7();
 	}
 	catch(int e) {
@@ -93,6 +94,7 @@ void test1() {
         Tree.insert("eighth", 8);
         Tree.insert("nineth", 9);
         Tree.insert("tenth", 10);
+	Tree.AVLPrint();
 	assert(Tree.find("first") && Tree.find("second") && Tree.find("fivth") && Tree.find("sixth"));
 }
 void test4() {
@@ -148,11 +150,31 @@ void test6() {
                 std::cout << it.value() << " ";
         std::cout << it.value() << std::endl;
 }
+
 void test7() {
+	std::cout << "\nTEST 7, test 1000000, AVL vs MAP\n" << std::endl;
+	std::map<int, int> m;
 	AVLTree<int, int> Tree;
-	for (int i = 0; i < 10000; ++i)
-		Tree.insert(rand(), i);
+	clock_t e1 = clock();
+	for (int i = 0; i < 1000000; ++i)
+		Tree.insert(rand(), rand());
 	std::cout << "Trees size = " << Tree.size() << std::endl;
 	std::cout << "Trees Height = " << Tree.Height() << std::endl;
 	std::cout << "Trees Theory Height = " << Tree.TheoryHeight() << std::endl;
+	clock_t s1 = clock();
+	clock_t e2 = clock();
+	for (int i = 0; i < 1000000; ++i)
+		m.insert(std::pair<int, int>(rand(), rand()));
+	std::cout << "Maps size = " << m.size() << std::endl;
+	clock_t s2 = clock();
+	std::cout << "AVL time = "
+	<< (s1 - e1) / 1000000
+	<< ":"
+	<< ((s1 - e1) / 1000) % 1000
+	<< std::endl;
+	std::cout << "MAP time = "
+	<< (s2 - e2) / 1000000
+	<< ":"
+	<< ((s2 - e2) / 1000) % 1000
+	<< std::endl;
 }

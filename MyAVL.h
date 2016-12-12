@@ -13,29 +13,17 @@ class AVLTree {
 public:
 	class AVL_iterator {
 	public:
-		AVL_iterator(const AVLTree<U, T> &other) {
-			node_ = NULL;
-			root_ = other._root;
-		}
+		AVL_iterator(const AVLTree<U, T> &other) : node_(NULL), root_(other._root) {}
 		AVL_iterator() : node_(NULL), root_(NULL) {}
-		AVL_iterator(const AVLTree<U, T> &Tr, AVLNode<U, T> *node) {
-			root_ = Tr._root;
-			node_ = node;
-		}
+		AVL_iterator(const AVLTree<U, T> &Tr, AVLNode<U, T> *node) : root_(Tr._root), node_(node) {}
 		AVL_iterator(const AVL_iterator &other) : node_(other.node_), root_(other.root_) {}
 		AVL_iterator(AVLNode<U, T> *other) : node_(other) {}
 		AVLNode<U, T> operator*() { return *node_; }
 		AVL_iterator GetLeft() {
-			if (node_->_left) {
-				AVL_iterator it(node_->_left);
-				return it;
-			}
+			return node_->_left ? AVL_iterator(node_->_left) : AVL_iterator(NULL);
 		}
 		AVL_iterator GetRight() {
-			if (node_->_right) {
-                       		AVL_iterator it(node_->_right);
-                        	return it;
-			}
+			return node_->_right ? AVL_iterator(node_->_right) : AVL_iterator(NULL);
                 }
 		bool operator==(const AVL_iterator &other) {
 			return node_ == other.node_;
@@ -74,38 +62,23 @@ public:
 	AVLTree() : _root(NULL), _size(0) {}
 	AVLTree(const AVLTree<U, T> &other);
 	~AVLTree();
-	size_t Height() { return _root->FixHeight(); }
-	void insert(const U &str, const T &value);
+	size_t Height() { return _root->_height; }
+	AVLNode<U, T> **insert_(AVLNode<U, T> **node, const U &key, const T &value);
+	void insert(const U &key, const T &value);
 	T &operator[](const U &str);
 	AVLTree<U, T> &operator=(const AVLTree<U, T> &other);
 	void AVLSort();
-	AVLNode<U, T> **insert_(AVLNode<U, T> **node, const U &str, const T &value);
 	void DeleteVertex(const U &str);
 	AVLNode<U, T> **DeleteVertex_(AVLNode<U, T> **node, const U &str);
-	AVLNode<U, T> *find_(AVLNode<U, T> *node, const U &str);
+	AVLNode<U, T> *find_(AVLNode<U, T> *node, const U &str); 
 	bool find(const U &str);
 	AVLNode<U, T> *GetMin_(AVLNode<U, T> *other) const;
         AVLNode<U, T> *GetMax_(AVLNode<U, T> *other) const;
-	AVL_iterator GetMin() const {
-                AVL_iterator it(GetMin_(_root));
-		return it;
-        }
-        AVL_iterator GetMax() const {
-       	        AVL_iterator it(GetMax_(_root));
-		return it;
-        }
-        AVL_iterator GetRoot() const { 
-		AVL_iterator it(_root);
-		return it;
-	}
-	AVL_iterator GetNext(const AVL_iterator &it) const {
-		AVL_iterator _it(next(it.key()));
-		return _it;
-	}
-        AVL_iterator GetPrev(const AVL_iterator &it) const {
-                AVL_iterator _it(*this, prev(it.key()));
-		return _it;
-        }
+	AVL_iterator GetMin() const { return AVL_iterator(GetMin_(_root)); }
+        AVL_iterator GetMax() const { return AVL_iterator(GetMax_(_root)); }
+        AVL_iterator GetRoot() const { return AVL_iterator(_root); }
+	AVL_iterator GetNext(const AVL_iterator &it) const { return AVL_iterator(next(it.key())); }
+        AVL_iterator GetPrev(const AVL_iterator &it) const { return AVL_iterator(prev(it.key())); }
 	AVLNode<U, T> *next(const U &str) const;
         AVLNode<U, T> *prev(const U &str) const;
 	void Destruct(AVLNode<U, T> **node);
@@ -125,6 +98,7 @@ public:
 		else 
 			return Find_(_root, str);
 	}
+
 	size_t size() { return _size; }
 	void print_(AVLNode<U, T> *node, int lvl, T value, char c) const;
 	void AVLPrint() const;
@@ -258,6 +232,7 @@ AVLNode<U, T> *AVLTree<U, T>::GetMax_(AVLNode<U, T> *other) const{
                 return other;
         return GetMax_(other->_right);
 }
+
 template<class U, class T>
 void AVLTree<U, T>::Destruct(AVLNode<U, T> **node) {
 	if (*node != NULL) {
@@ -272,6 +247,7 @@ template<class U, class T>
 AVLTree<U, T>::~AVLTree() {
 	Destruct(&_root);
 }
+
 template<class U, class T>
 AVLNode<U, T> *AVLTree<U, T>::find_(AVLNode<U, T> *node, const U &str) {
 	if (node == NULL)
@@ -303,30 +279,27 @@ bool AVLTree<U, T>::find(const U &str) {
 	}
 	return false;
 }
-
 template<class U, class T>
-AVLNode<U, T> **AVLTree<U, T>::insert_(AVLNode<U, T> **node, const U &str,const T &value) {
+AVLNode<U, T> **AVLTree<U, T>::insert_(AVLNode<U, T> **node, const U &key, const T &value) {
 	if (*node == NULL) {
-		*node = new AVLNode<U, T>(str, value);
+		*node = new AVLNode<U, T>(key, value);
 		return node;
 	}
 	else {
-		if (str < (*node)->_key)
-			(*node)->_left = *(insert_(&((*node)->_left), str, value));		
+		if (key < (*node)->_key)
+			(*node)->_left = *(insert_(&((*node)->_left), key, value));		
 		else
-			if (str > (*node)->_key) 
-				(*node)->_right = *(insert_(&((*node)->_right), str, value));
+			(*node)->_right = *(insert_(&((*node)->_right), key, value));
 		*node = (*node)->Balance();
 		return node;
 	}
 }
-
 template<class U, class T>
-void AVLTree<U, T>::insert(const U &str,const T &value) {
-		if (!find(str)) {
-			insert_(&_root, str, value);
-			++_size;
-		}
+void AVLTree<U, T>::insert(const U &key,const T &value) {
+	if (!find(key)) {
+		insert_(&_root, key, value);
+		++_size;
+	}
 }
 
 template<class U, class T>
@@ -363,6 +336,7 @@ void AVLTree<U, T>::DeleteVertex(const U &str) {
 	else
 		throw 5;
 }
+
 template<class U, class T>
 void AVLTree<U, T>::print_(AVLNode<U, T> *node, int lvl, T value, char c) const {
 	if (node == NULL)
